@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Moving Heart Animation</title>
+  <style>
+    body {
+      background-color: #ffd1e3;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      font-family: 'Dancing Script', 'Segoe Script', cursive, Arial, sans-serif;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+    #heart-container {
+      position: absolute;
+      z-index: 2;
+      width: 110px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 0.4s, height 0.4s;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #heart {
+      width: 110px;
+      height: 100px;
+      cursor: pointer;
+      transition: width 0.4s, height 0.4s;
+      z-index: 2;
+      position: relative;
+      display: block;
+    }
+    #heart path {
+      fill: #ff2d55; /* Red fill for heart */
+      stroke: #ff2d55;
+      stroke-width: 4px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .bottom-text {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 2em;
+      font-family: 'Dancing Script', 'Segoe Script', cursive, Arial, sans-serif;
+      z-index: 10;
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+      letter-spacing: 2px;
+    }
+    .center-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 3em;
+      font-family: 'Dancing Script', 'Segoe Script', cursive, Arial, sans-serif;
+      z-index: 20;
+      text-align: center;
+      display: none;
+      pointer-events: none;
+      font-weight: bold;
+      max-width: 90vw;
+      word-break: break-word;
+      padding: 0.2em 0.6em;
+      background: transparent;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      letter-spacing: 2px;
+      animation: fadeInMessage 0.7s;
+    }
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.9) translate(-50%, -50%);}
+      to { opacity: 1; transform: scale(1) translate(-50%, -50%);}
+    }
+    .center-btn {
+      position: fixed;
+      left: 50%;
+      /* Position right below the center-message */
+      top: calc(50% + 2.5em);
+      transform: translateX(-50%);
+      background: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 26px;
+      font-size: 1.25em;
+      color: #ff2d55;
+      font-family: 'Dancing Script', 'Segoe Script', cursive, Arial, sans-serif;
+      font-weight: bold;
+      box-shadow: 0 4px 16px #ff8bb7;
+      cursor: pointer;
+      z-index: 30;
+      display: none;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+      outline: none;
+      border: 2px solid #fff;
+      letter-spacing: 2px;
+    }
+    .center-btn:hover {
+      background: #ff2d55;
+      color: #fff;
+      border-color: #ff2d55;
+      box-shadow: 0 6px 24px #e54f85;
+    }
+  </style>
+</head>
+<body>
+  <div id="heart-container">
+    <!-- Simple filled heart SVG, now red -->
+    <svg id="heart" viewBox="0 0 100 90">
+      <path d="M50 78
+               Q20 58 20 35
+               Q20 10 50 27
+               Q80 10 80 35
+               Q80 58 50 78 Z" />
+    </svg>
+  </div>
+  <div class="bottom-text">
+    Catch the heart until it stops moving
+  </div>
+  <div class="center-message" id="centerMessage"></div>
+  <!-- Button appears right below the message after last message -->
+  <a class="center-btn" id="centerBtn" href="https://www.tonickitchen.ca/" target="_blank">Click Me</a>
+  <script>
+    const heartContainer = document.getElementById('heart-container');
+    const heart = document.getElementById('heart');
+    const centerMsg = document.getElementById('centerMessage');
+    const centerBtn = document.getElementById('centerBtn');
+    let x = (window.innerWidth - 110) / 2;
+    let y = (window.innerHeight - 100) / 2;
+    let dx = 5, dy = 5;
+    const heartSmall = { width: 110, height: 100 };
+    let messageStep = 0;
+    let animationRunning = true;
+
+    // Beautiful, romantic messages
+    const messages = [
+      "You're the best thing that ever happened to me.",
+      "I'm lucky every day to have you in my life.",
+      "Thank you for trusting me and having faith in me.",
+      "I Love You Adeena <span style='color:#e54f85;'>&lt;3</span>"
+    ];
+
+    function moveHeart() {
+      if (!animationRunning) return;
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+      x += dx;
+      y += dy;
+
+      // Bounce off the edges
+      if (x < 0 || x > screenW - heartSmall.width) dx = -dx;
+      if (y < 0 || y > screenH - heartSmall.height) dy = -dy;
+
+      // Clamp position
+      x = Math.max(0, Math.min(x, screenW - heartSmall.width));
+      y = Math.max(0, Math.min(y, screenH - heartSmall.height));
+
+      heartContainer.style.left = x + "px";
+      heartContainer.style.top = y + "px";
+      requestAnimationFrame(moveHeart);
+    }
+
+    // Put heart at center and start moving
+    heartContainer.style.left = x + "px";
+    heartContainer.style.top = y + "px";
+    heartContainer.style.width = heartSmall.width + "px";
+    heartContainer.style.height = heartSmall.height + "px";
+    heart.style.width = heartSmall.width + "px";
+    heart.style.height = heartSmall.height + "px";
+    heartContainer.style.position = "absolute";
+    moveHeart();
+
+    // Do not show any message at start (first click will show first message)
+    centerMsg.style.display = 'none';
+    messageStep = 0;
+
+    heart.addEventListener('click', () => {
+      centerMsg.style.display = 'block';
+      centerMsg.innerHTML = messages[messageStep % messages.length];
+
+      // When last message is displayed
+      if (messageStep % messages.length === messages.length - 1) {
+        // Hide heart and stop moving
+        animationRunning = false;
+        heartContainer.style.display = 'none';
+        // Show the button right below the message
+        centerBtn.style.display = 'block';
+      }
+      messageStep++;
+    });
+  </script>
+</body>
+</html>
